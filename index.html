@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 버스 노선</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #FFF5E6 0%, #FFE8CC 100%);
+            padding-bottom: 80px;
+        }
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #FF6B35;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            display: none;
+        }
+        .content {
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+        .search-bar {
+            background: white;
+            border: 2px solid #FFD4B8;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
+        }
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #333;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        .add-form {
+            background: #FFF5E6;
+            border: 2px solid #FFD4B8;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .add-form h3 {
+            color: #FF6B35;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .form-input {
+            width: 100%;
+            border: 2px solid #FFD4B8;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 15px;
+            outline: none;
+            background: white;
+        }
+        .form-input:focus {
+            border-color: #FF6B35;
+        }
+        .form-textarea {
+            resize: none;
+            height: 80px;
+        }
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-save {
+            flex: 1;
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            flex: 1;
+            background: #E0E0E0;
+            color: #666;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .route-card {
+            background: white;
+            border: 2px solid #FFE8CC;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+        .route-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .bus-number {
+            background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+            color: white;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            width: 80px;
+            text-align: center;
+        }
+        .naver-map-btn {
+            background: #03C75A;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: center;
+            flex: 1;
+        }
+        .route-info {
+            flex: 1;
+        }
+        .route-info {
+            flex: 1;
+        }
+        .route-row {
+            display: block;
+        }
+        .route-col {
+            display: block;
+        }
+        .route-location {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+            line-height: 1.4;
+        }
+        .delete-btn {
+            background: #FFE8CC;
+            color: #FF6B35;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .edit-btn, .delete2-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .edit-btn {
+            background: #4A90E2;
+            color: white;
+        }
+        .delete2-btn {
+            background: #E74C3C;
+            color: white;
+        }
+        .route-detail {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px solid #FFF5E6;
+            display: none;
+        }
+        .route-detail.active {
+            display: block;
+        }
+        .full-route {
+            background: linear-gradient(135deg, #FFF5E6 0%, #FFE8CC 100%);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 12px;
+            border: 2px solid #FFD4B8;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .route-step {
+            display: flex;
+            align-items: flex-start;
+            margin: 4px 0;
+            gap: 12px;
+        }
+        .route-dot {
+            width: 10px;
+            height: 10px;
+            background: #FF6B35;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+        .route-line {
+            width: 2px;
+            height: 24px;
+            background: #FFD4B8;
+            margin-left: 4px;
+        }
+        .route-step-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+        .route-step:first-child .route-dot {
+            background: #4CAF50;
+            width: 14px;
+            height: 14px;
+            margin-top: 3px;
+        }
+        .route-step:last-child .route-dot {
+            background: #F44336;
+            width: 14px;
+            height: 14px;
+            margin-top: 3px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 2px solid #FFE8CC;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            padding: 8px;
+            color: #999;
+            transition: all 0.3s;
+        }
+        .tab-item.active {
+            color: #FF6B35;
+        }
+        .tab-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .tab-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .data-management {
+            display: none;
+        }
+        .data-management.active {
+            display: block;
+        }
+        .data-btn {
+            background: white;
+            border: 2px solid #FFD4B8;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #FF6B35;
+            width: 100%;
+            text-align: center;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 320px;
+            margin: 20px;
+            text-align: center;
+        }
+        .modal-content h3 {
+            color: #FF6B35;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .modal-btn-yes {
+            background: #FF6B35;
+            color: white;
+        }
+        .modal-btn-no {
+            background: #E0E0E0;
+            color: #666;
+        }
+        .file-input {
+            display: none;
+        }
+        .info-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: #FFF5E6;
+            border-radius: 12px;
+            border: 2px solid #FFD4B8;
+        }
+        .info-box h3 {
+            color: #FF6B35;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .info-box p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <button class="home-btn" id="homeBtn">🏠</button>
+    <div class="container">
+        <div class="header">
+            <h1>🚌 내 버스 노선</h1>
+            <p>자주 타는 버스를 저장하고 빠르게 찾으세요</p>
+        </div>
+        <div class="content" id="mainContent" style="display: block;">
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" id="searchInput" placeholder="검색...">
+                <span id="clearSearch" style="cursor: pointer; display: none;">✕</span>
+            </div>
+            <div id="routesList"></div>
+            <button class="btn-primary" id="addBtn">➕ 새 노선 추가</button>
+            <div class="add-form" id="addForm" style="display: none;">
+                <h3>➕ 새 노선 추가</h3>
+                <div style="margin-bottom: 8px; color: #FF6B35; font-weight: 600; font-size: 14px;">버스 번호</div>
+                <input type="text" class="form-input" id="busNumber" placeholder="예: 401">
+                <div style="margin-bottom: 8px; color: #FF6B35; font-weight: 600; font-size: 14px;">출발지</div>
+                <input type="text" class="form-input" id="departure" placeholder="예: 강남역">
+                <div style="margin-bottom: 8px; color: #FF6B35; font-weight: 600; font-size: 14px;">목적지</div>
+                <input type="text" class="form-input" id="destination" placeholder="예: 서울대입구역">
+                <div style="margin-bottom: 8px; color: #FF6B35; font-weight: 600; font-size: 14px;">주요 경유지</div>
+                <textarea class="form-input form-textarea" id="waypoints" placeholder="예: 역삼역, 교보타워"></textarea>
+                <div class="form-buttons">
+                    <button class="btn-save" id="saveBtn">저장</button>
+                    <button class="btn-cancel" id="cancelBtn">취소</button>
+                </div>
+            </div>
+            
+        </div>
+        <div class="content data-management" id="dataContent" style="display: none;">
+            <h2 style="color: #FF6B35; margin-bottom: 20px;">⚙️ 데이터 관리</h2>
+            <button class="data-btn" id="backupBtn">💾 백업하기</button>
+            <button class="data-btn" id="restoreBtn">📥 복원하기</button>
+        
+            <input type="file" id="fileInput" class="file-input" accept=".json">
+            <input type="file" id="stopsFileInput" class="file-input" accept=".txt,.csv,.json">
+            
+        </div>
+        <div class="tab-bar">
+            <div class="tab-item" data-tab="data" style="cursor: pointer;">
+                <div class="tab-icon">⚙️</div>
+                <div class="tab-label">데이터관리</div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="restoreModal">
+        <div class="modal-content">
+            <h3>⚠️ 복원 확인</h3>
+            <p>복원하면 자료가 전부 지워집니다.<br>복원하시겠습니까?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-yes" id="confirmRestore">예</button>
+                <button class="modal-btn modal-btn-no" id="cancelRestore">아니오</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <h3>⚠️ 삭제 확인</h3>
+            <p>삭제하면 자료가 사라집니다.<br>삭제하시겠습니까?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-yes" id="confirmDelete">예</button>
+                <button class="modal-btn modal-btn-no" id="cancelDelete">아니오</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="importModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3>🚌 정류장 목록 가져오기</h3>
+            <div style="text-align: left; margin: 20px 0;">
+                <input type="text" id="importBusNumber" class="form-input" placeholder="버스 번호 (예: 6648)" style="margin-bottom: 10px;">
+                <input type="text" id="importDeparture" class="form-input" placeholder="출발지" style="margin-bottom: 10px;">
+                <input type="text" id="importDestination" class="form-input" placeholder="목적지" style="margin-bottom: 10px;">
+                <textarea id="importWaypoints" class="form-input" placeholder="주요 경유지 (선택)" style="height: 60px;"></textarea>
+            </div>
+            <p style="font-size: 13px; color: #666; margin-bottom: 15px;">파일에서 정류장 목록을 불러옵니다</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-yes" id="confirmImport">파일 선택</button>
+                <button class="modal-btn modal-btn-no" id="cancelImport">취소</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let routes = JSON.parse(localStorage.getItem('busRoutes')) || [];
+        const mainContent = document.getElementById('mainContent');
+        const dataContent = document.getElementById('dataContent');
+        const homeBtn = document.getElementById('homeBtn');
+        const addBtn = document.getElementById('addBtn');
+        const addForm = document.getElementById('addForm');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const routesList = document.getElementById('routesList');
+        const backupBtn = document.getElementById('backupBtn');
+        const restoreBtn = document.getElementById('restoreBtn');
+        
+        const fileInput = document.getElementById('fileInput');
+        const stopsFileInput = document.getElementById('stopsFileInput');
+        const restoreModal = document.getElementById('restoreModal');
+        const importModal = document.getElementById('importModal');
+        const confirmRestore = document.getElementById('confirmRestore');
+        const cancelRestore = document.getElementById('cancelRestore');
+        const confirmImport = document.getElementById('confirmImport');
+        const cancelImport = document.getElementById('cancelImport');
+        const deleteModal = document.getElementById('deleteModal');
+        const confirmDelete = document.getElementById('confirmDelete');
+        const cancelDelete = document.getElementById('cancelDelete');
+        let deleteTargetId = null;
+
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                switchTab(tabName);
+            });
+        });
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            if (tabName === 'main') {
+                mainContent.style.display = 'block';
+                dataContent.style.display = 'none';
+                homeBtn.style.display = 'none';
+            } else {
+                mainContent.style.display = 'none';
+                dataContent.style.display = 'block';
+                homeBtn.style.display = 'block';
+            }
+        }
+
+        homeBtn.addEventListener('click', () => {
+            mainContent.style.display = 'block';
+            dataContent.style.display = 'none';
+            homeBtn.style.display = 'none';
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        });
+        addBtn.addEventListener('click', () => {
+            addForm.style.display = 'block';
+            addBtn.style.display = 'none';
+        });
+        cancelBtn.addEventListener('click', () => {
+            addForm.style.display = 'none';
+            addBtn.style.display = 'block';
+            editingRouteId = null;
+            document.querySelector('.add-form h3').textContent = '➕ 새 노선 추가';
+            clearForm();
+        });
+
+        saveBtn.addEventListener('click', () => {
+            const busNumber = document.getElementById('busNumber').value;
+            const departure = document.getElementById('departure').value;
+            const destination = document.getElementById('destination').value;
+            const waypoints = document.getElementById('waypoints').value;
+            if (busNumber && departure && destination) {
+                if (editingRouteId) {
+                    const index = routes.findIndex(r => r.id === editingRouteId);
+                    if (index !== -1) {
+                        routes[index] = {id: editingRouteId, busNumber, departure, destination, waypoints, fullRoute: routes[index].fullRoute || ''};
+                    }
+                    editingRouteId = null;
+                } else {
+                    routes.push({id: Date.now(), busNumber, departure, destination, waypoints, fullRoute: ''});
+                }
+                saveRoutes();
+                renderRoutes();
+                addForm.style.display = 'none';
+                addBtn.style.display = 'block';
+                document.querySelector('.add-form h3').textContent = '➕ 새 노선 추가';
+                clearForm();
+            }
+        });
+
+        function clearForm() {
+            document.getElementById('busNumber').value = '';
+            document.getElementById('departure').value = '';
+            document.getElementById('destination').value = '';
+            document.getElementById('waypoints').value = '';
+        }
+        let editingRouteId = null;
+
+        function editRoute(id) {
+            const route = routes.find(r => r.id === id);
+            if (route) {
+                editingRouteId = id;
+                document.getElementById('busNumber').value = route.busNumber;
+                document.getElementById('departure').value = route.departure;
+                document.getElementById('destination').value = route.destination;
+                document.getElementById('waypoints').value = route.waypoints || '';
+                addForm.style.display = 'block';
+                addBtn.style.display = 'none';
+                document.querySelector('.add-form h3').textContent = '✏️ 노선 수정';
+            }
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const value = e.target.value;
+            clearSearch.style.display = value ? 'block' : 'none';
+            renderRoutes(value);
+        });
+
+        clearSearch.addEventListener('click', () => {
+            searchInput.value = '';
+            clearSearch.style.display = 'none';
+            renderRoutes();
+        });
+
+        function renderRoutes(searchTerm = '') {
+            const filtered = searchTerm ? routes.filter(r => 
+                r.departure.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                r.destination.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                (r.waypoints && r.waypoints.toLowerCase().includes(searchTerm.toLowerCase()))
+            ) : routes;
+            if (filtered.length === 0) {
+                routesList.innerHTML = `<div class="empty-state"><div class="empty-icon">${searchTerm ? '🔍' : '🚌'}</div><p>${searchTerm ? `'${searchTerm}'저장된 노선이 없습니다` : '저장된 노선이 없습니다<br>자주 이용하는 버스를 추가해보세요'}</p></div>`;
+            } else {
+                routesList.innerHTML = filtered.map(route => {
+                    let stops = [];
+                    if (route.fullRoute) {
+                        stops = route.fullRoute.split('\n').map(s => s.trim()).filter(s => s);
+                        if (stops.length <= 1) stops = route.fullRoute.split('>').map(s => s.trim()).filter(s => s);
+                    }
+                    return `<div class="route-card" data-id="${route.id}"><div class="route-header"><div class="bus-number" data-route-id="${route.id}">${route.busNumber}</div><div class="route-info"><div class="route-location"><span style="color: #0277BD; font-weight: 600;">출발지:</span> <span style="color: #333;">${route.departure}</span></div><div class="route-location"><span style="color: #0277BD; font-weight: 600;">목적지:</span> <span style="color: #333;">${route.destination}</span></div>${route.waypoints ? `<div class="route-location"><span style="color: #0277BD; font-weight: 600;">주요경유지:</span> <span style="color: #333;">${route.waypoints}</span></div>` : ''}<div style="display: flex; gap: 8px; margin-top: 8px;"><a href="https://map.naver.com/v5/search/${encodeURIComponent(route.busNumber + '번 버스')}" target="_blank" class="naver-map-btn" style="flex: 1; text-decoration: none;">지도</a><button class="edit-btn" data-edit-id="${route.id}">수정</button><button class="delete2-btn" data-delete-id="${route.id}">삭제</button></div></div></div><div class="route-detail" id="detail-${route.id}">${stops.length > 0 ? `<div class="full-route"><div class="detail-label" style="margin-bottom: 12px;">🗺️ 전체 노선도 (총 ${stops.length}개 정류장)</div>${stops.map((stop, idx) => `<div><div class="route-step"><div class="route-dot"></div><div class="route-step-text">${stop}</div></div>${idx < stops.length - 1 ? '<div class="route-line"></div>' : ''}</div>`).join('')}</div>` : `<div class="detail-item"><div class="detail-label">🗺️ 전체 노선도</div><div class="detail-text">${route.departure} → ${route.destination}</div></div>`}</div></div>`;
+                }).join('');
+                document.querySelectorAll('.bus-number').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                });
+                
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const editId = parseInt(this.getAttribute('data-edit-id'));
+                        editRoute(editId);
+                    });
+                });
+                document.querySelectorAll('.delete2-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const deleteId = this.getAttribute('data-delete-id');
+                        showDeleteModal(deleteId);
+                    });
+                });
+            }
+        }
+
+        function saveRoutes() {
+            localStorage.setItem('busRoutes', JSON.stringify(routes));
+        }
+
+        backupBtn.addEventListener('click', () => {
+            const dataStr = JSON.stringify(routes, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bus_routes_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('✅ 백업이 완료되었습니다!');
+            switchTab('main');
+        });
+
+        restoreBtn.addEventListener('click', () => restoreModal.classList.add('active'));
+        cancelRestore.addEventListener('click', () => restoreModal.classList.remove('active'));
+        confirmRestore.addEventListener('click', () => {
+            restoreModal.classList.remove('active');
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        routes = JSON.parse(event.target.result);
+                        saveRoutes();
+                        renderRoutes();
+                        alert('✅ 복원이 완료되었습니다!');
+                    } catch (error) {
+                        alert('❌ 파일을 읽을 수 없습니다.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+            fileInput.value = '';
+        });
+
+        
+        cancelImport.addEventListener('click', () => importModal.classList.remove('active'));
+        confirmImport.addEventListener('click', () => {
+            const busNumber = document.getElementById('importBusNumber').value;
+            const departure = document.getElementById('importDeparture').value;
+            const destination = document.getElementById('importDestination').value;
+            if (!busNumber || !departure || !destination) {
+                alert('버스 번호, 출발지, 목적지를 모두 입력해주세요!');
+                return;
+            }
+            stopsFileInput.click();
+        });
+
+        stopsFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        let content = event.target.result;
+                        let stops = [];
+                        if (file.name.endsWith('.json')) {
+                            const jsonData = JSON.parse(content);
+                            if (Array.isArray(jsonData)) stops = jsonData;
+                            else if (jsonData.stops) stops = jsonData.stops;
+                        } else if (file.name.endsWith('.csv')) {
+                            stops = content.split('\n').map(line => line.split(',')[0].trim()).filter(stop => stop && stop.length > 0);
+                        } else {
+                            stops = content.split('\n').map(line => line.trim()).filter(line => line && line.length > 1 && !/^\d+$/.test(line) && !/^[.,\-_]+$/.test(line) && !line.includes('방향') && !line.includes('도착'));
+                        }
+                        if (stops.length > 0) {
+                            const busNumber = document.getElementById('importBusNumber').value;
+                            const departure = document.getElementById('importDeparture').value;
+                            const destination = document.getElementById('importDestination').value;
+                            const waypoints = document.getElementById('importWaypoints').value;
+                            routes.push({id: Date.now(), busNumber, departure, destination, waypoints, fullRoute: stops.join('\n')});
+                            saveRoutes();
+                            renderRoutes();
+                            importModal.classList.remove('active');
+                            document.getElementById('importBusNumber').value = '';
+                            document.getElementById('importDeparture').value = '';
+                            document.getElementById('importDestination').value = '';
+                            document.getElementById('importWaypoints').value = '';
+                            switchTab('main');
+                            alert(`✅ ${stops.length}개의 정류장이 추가되었습니다!`);
+                        } else {
+                            alert('❌ 정류장 정보를 찾을 수 없습니다.');
+                        }
+                    } catch (error) {
+                        alert('❌ 파일을 읽을 수 없습니다: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+            stopsFileInput.value = '';
+        });
+        function showDeleteModal(id) {
+            deleteTargetId = id;
+            deleteModal.classList.add('active');
+        }
+
+        confirmDelete.addEventListener('click', () => {
+            if (deleteTargetId) {
+                routes = routes.filter(r => r.id != deleteTargetId);
+                saveRoutes();
+                renderRoutes(searchInput.value);
+                deleteTargetId = null;
+            }
+            deleteModal.classList.remove('active');
+        });
+
+        cancelDelete.addEventListener('click', () => {
+            deleteTargetId = null;
+            deleteModal.classList.remove('active');
+        });
+
+        window.addEventListener('load', function() {
+            renderRoutes();
+        });
+    </script>
+</body>
+</html>
