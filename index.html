@@ -504,7 +504,7 @@
         </div>
     </div>
     <script>
-        let routes = JSON.parse(localStorage.getItem('busRoutes')) || [];
+        let routes = JSON.parse(localStorage.getItem('mybus2026')) || [];
         const mainContent = document.getElementById('mainContent');
         const dataContent = document.getElementById('dataContent');
         const homeBtn = document.getElementById('homeBtn');
@@ -669,7 +669,7 @@
         }
 
         function saveRoutes() {
-            localStorage.setItem('busRoutes', JSON.stringify(routes));
+            localStorage.setItem('mybus2026', JSON.stringify(routes));
         }
 
         backupBtn.addEventListener('click', () => {
@@ -701,7 +701,10 @@
                         routes = JSON.parse(event.target.result);
                         saveRoutes();
                         renderRoutes();
+                        const saved = localStorage.getItem('mybus2026');
+                        console.log('복원 후 저장 확인:', saved);
                         alert('✅ 복원이 완료되었습니다!');
+                        location.reload();
                     } catch (error) {
                         alert('❌ 파일을 읽을 수 없습니다.');
                     }
